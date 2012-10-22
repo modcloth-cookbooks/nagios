@@ -17,12 +17,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-%w{
-  nagios-nrpe-server
-  nagios-plugins
-  nagios-plugins-basic
-  nagios-plugins-standard
-}.each do |pkg|
-  package pkg
+case node['platform']
+when "smartos"
+  %w{
+    nagios-nrpe
+    nagios-plugins
+  }.each do |pkg|
+    package pkg
+  end
+else
+  %w{
+    nagios-nrpe-server
+    nagios-plugins
+    nagios-plugins-basic
+    nagios-plugins-standard
+  }.each do |pkg|
+    package pkg
+  end
 end
+
+# nagios-plugins-1.4.15nb1  Nagios plugins
+# nagios-plugin-snmp-1.4.15nb1  Nagios snmp plugins
+# nagios-plugin-pgsql-1.4.15nb1  Nagios pgsql plugin
+# nagios-plugin-mysql-1.4.15nb1  Nagios mysql plugin
+# nagios-plugin-ldap-1.4.15nb1  Nagios ldap plugin
+# nagios-nsca-2.7.2    Remote/passive network service for nagios
+# nagios-nrpe-2.12nb3  Nagios remote program execution daemon
+# nagios-base-3.3.1nb3  Network monitor

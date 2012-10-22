@@ -21,4 +21,9 @@
 default['nagios']['user'] = "nagios"
 default['nagios']['group'] = "nagios"
 
-default['nagios']['plugin_dir'] = "/usr/lib/nagios/plugins"
+case node['platform']
+when "smartos"
+  default['nagios']['plugin_dir'] = "/opt/local/lib/nagios/plugins"
+else
+  default['nagios']['plugin_dir'] = "/usr/lib/nagios/plugins"
+end

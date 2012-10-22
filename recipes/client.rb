@@ -22,6 +22,13 @@
 # limitations under the License.
 #
 
+case node.platform
+when "smartos"
+  service_name = 'nrpe'
+else
+  service_name = 'nagios-nrpe-server'
+end
+
 mon_host = ['127.0.0.1']
 
 if node.run_list.roles.include?(node['nagios']['server_role'])
@@ -52,6 +59,11 @@ directory "#{node['nagios']['nrpe']['conf_dir']}/nrpe.d" do
   mode 00755
 end
 
+service node['nagios']['nrpe']['service_name'] do
+  action :nothing
+  supports :restart => true, :reload => true
+end
+
 template "#{node['nagios']['nrpe']['conf_dir']}/nrpe.cfg" do
   source "nrpe.cfg.erb"
   owner "root"
@@ -61,13 +73,13 @@ template "#{node['nagios']['nrpe']['conf_dir']}/nrpe.cfg" do
     :mon_host => mon_host,
     :nrpe_directory => "#{node['nagios']['nrpe']['conf_dir']}/nrpe.d"
   )
-  notifies :restart, "service[nagios-nrpe-server]"
+  notifies :restart, resources(:service => node['nagios']['nrpe']['service_name'])
 end
 
-service "nagios-nrpe-server" do
-  action [:start, :enable]
-  supports :restart => true, :reload => true
-end
+# service service_name do
+#   action [:start, :enable]
+#   supports :restart => true, :reload => true
+# end
 
 # Use NRPE LWRP to define a few checks
 nagios_nrpecheck "check_load" do
