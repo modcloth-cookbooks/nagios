@@ -48,6 +48,7 @@ else
   default['nagios']['nrpe']['dont_blame_nrpe']   = "0"
   default['nagios']['nrpe']['command_timeout']   = "60"
 end
+
 # for plugin from source installation
 default['nagios']['plugins']['url']      = 'http://prdownloads.sourceforge.net/sourceforge/nagiosplug'
 default['nagios']['plugins']['version']  = '1.4.16'
@@ -66,3 +67,4 @@ default['nagios']['checks']['smtp_host'] = String.new
 
 default['nagios']['server_role'] = "monitoring"
 default['nagios']['multi_environment_monitoring'] = false
+default['nagios']['external_monitoring_host'] = false

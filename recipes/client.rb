@@ -37,6 +37,9 @@ elsif node['nagios']['multi_environment_monitoring']
   search(:node, "role:#{node['nagios']['server_role']}") do |n|
    mon_host << n['ipaddress']
   end
+elsif
+  node['nagios']['external_monitoring_host']
+  mon_host << node['nagios']['external_monitoring_host']
 else
   search(:node, "role:#{node['nagios']['server_role']} AND chef_environment:#{node.chef_environment}") do |n|
     mon_host << n['ipaddress']
@@ -60,7 +63,7 @@ directory "#{node['nagios']['nrpe']['conf_dir']}/nrpe.d" do
 end
 
 service node['nagios']['nrpe']['service_name'] do
-  action :nothing
+  action [:start, :enable]
   supports :restart => true, :reload => true
 end
 
@@ -75,11 +78,6 @@ template "#{node['nagios']['nrpe']['conf_dir']}/nrpe.cfg" do
   )
   notifies :restart, resources(:service => node['nagios']['nrpe']['service_name'])
 end
-
-# service service_name do
-#   action [:start, :enable]
-#   supports :restart => true, :reload => true
-# end
 
 # Use NRPE LWRP to define a few checks
 nagios_nrpecheck "check_load" do

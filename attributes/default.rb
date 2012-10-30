@@ -24,6 +24,8 @@ default['nagios']['group'] = "nagios"
 case node['platform']
 when "smartos"
   default['nagios']['plugin_dir'] = "/opt/local/lib/nagios/plugins"
+  # /opt/local/lib/nagios/plugins
+  # /opt/local/libexec/nagios
 else
   default['nagios']['plugin_dir'] = "/usr/lib/nagios/plugins"
 end

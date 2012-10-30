@@ -22,6 +22,7 @@
 # limitations under the License.
 
 web_srv = node['nagios']['server']['web_server'].to_sym
+role_list = Array.new
 
 case web_srv
 when :nginx
@@ -97,12 +98,17 @@ if services.nil? || services.empty?
   services = Array.new
 end
 
+
 # find all unique hostgroups in the nagios_unmanagedhosts data bag
 begin
   unmanaged_hosts = search(:nagios_unmanagedhosts, '*:*')
 rescue Net::HTTPServerException
   Chef::Log.info("Search for nagios_unmanagedhosts data bag failed, so we'll just move on.")
 end
+
+dns_server_list = `host -l demo.modcloth.com | awk '{print $1, $4}'`
+
+
 
 # Add unmanaged host hostgroups to the role_list if they're not already present
 if unmanaged_hosts.nil? || unmanaged_hosts.empty?
@@ -115,6 +121,16 @@ else
       end
     end
   end
+end
+
+unmanaged_hosts = dns_server_list.split("\n").collect do |record|
+  parts = record.split
+  {
+    'hostname' => parts[0], 
+    'address' => parts[1],
+    'hostgroups' => [ "base", "solaris2"],
+    'notifications' => 0
+  }
 end
 
 # Load search defined Nagios hostgroups from the nagios_hostgroups data bag and find nodes
@@ -139,7 +155,7 @@ sysadmins.each do |s|
 end
 
 # maps nodes into nagios hostgroups
-role_list = Array.new
+
 service_hosts= Hash.new
 search(:role, "*:*") do |r|
   role_list << r.name

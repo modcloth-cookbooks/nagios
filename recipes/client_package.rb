@@ -25,6 +25,15 @@ when "smartos"
   }.each do |pkg|
     package pkg
   end
+  
+  # need to copy over all plugins from /opt/local/libexec on smartos
+  # cp /opt/local/libexec/nagios/* /opt/local/lib/nagios/plugins/  
+  execute "copy nrpe checks from libexec" do
+    command "cp /opt/local/libexec/nagios/* /opt/local/lib/nagios/plugins/"
+    notifies :restart, resources(:service => node['nagios']['nrpe']['service_name'])
+    not_if {File.exists?("/opt/local/lib/nagios/plugins/check_nrpe")}
+  end
+
 else
   %w{
     nagios-nrpe-server
@@ -36,11 +45,4 @@ else
   end
 end
 
-# nagios-plugins-1.4.15nb1  Nagios plugins
-# nagios-plugin-snmp-1.4.15nb1  Nagios snmp plugins
-# nagios-plugin-pgsql-1.4.15nb1  Nagios pgsql plugin
-# nagios-plugin-mysql-1.4.15nb1  Nagios mysql plugin
-# nagios-plugin-ldap-1.4.15nb1  Nagios ldap plugin
-# nagios-nsca-2.7.2    Remote/passive network service for nagios
-# nagios-nrpe-2.12nb3  Nagios remote program execution daemon
-# nagios-base-3.3.1nb3  Network monitor
+
