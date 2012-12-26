@@ -106,7 +106,7 @@ rescue Net::HTTPServerException
   Chef::Log.info("Search for nagios_unmanagedhosts data bag failed, so we'll just move on.")
 end
 
-dns_server_list = `host -l demo.modcloth.com | awk '{print $1, $4}'`
+dns_server_list = `host -l demo.modcloth.com | grep -v server | awk '{print $1, $4}'`
 
 
 
@@ -128,7 +128,7 @@ unmanaged_hosts = dns_server_list.split("\n").collect do |record|
   {
     'hostname' => parts[0], 
     'address' => parts[1],
-    'hostgroups' => [ "base", "solaris2"],
+    'hostgroups' => [ "base", "solaris2", "linux"],
     'notifications' => 0
   }
 end
@@ -250,7 +250,8 @@ end
 
 nagios_conf "hosts" do
   variables(
-    :nodes => nodes,
+    # :nodes => nodes,
+    :nodes => [],
     :unmanaged_hosts => unmanaged_hosts
   )
 end
