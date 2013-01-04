@@ -22,6 +22,13 @@
 # limitations under the License.
 #
 
+default['nagios']['client']['packages'] = %w{
+  nagios-nrpe-server
+  nagios-plugins
+  nagios-plugins-basic
+  nagios-plugins-standard
+}
+
 case node['platform_family']
 when 'debian'
   default['nagios']['client']['install_method'] = 'package'
@@ -38,6 +45,7 @@ default['nagios']['nrpe']['home']              = '/usr/lib/nagios'
 default['nagios']['nrpe']['conf_dir']          = '/etc/nagios'
 default['nagios']['nrpe']['dont_blame_nrpe']   = 0
 default['nagios']['nrpe']['command_timeout']   = 60
+default['nagios']['nrpe']['service_name'] = 'nagios-nrpe-server'
 
 # for plugin from source installation
 default['nagios']['plugins']['url']      = 'http://prdownloads.sourceforge.net/sourceforge/nagiosplug'

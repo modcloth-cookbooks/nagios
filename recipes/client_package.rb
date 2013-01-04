@@ -18,11 +18,6 @@
 # limitations under the License.
 #
 
-%w{
-  nagios-nrpe-server
-  nagios-plugins
-  nagios-plugins-basic
-  nagios-plugins-standard
-}.each do |pkg|
+node['nagios']['client']['packages'].each do |pkg|
   package pkg
 end
